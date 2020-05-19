@@ -1,5 +1,5 @@
 // @flow
-import { type Dispatch as ReduxDispatch } from 'redux'
+import { Dispatch as ReduxDispatch } from 'redux'
 
 import fetchCurrenciesRates from '~/logic/currencyValues/api/fetchCurrenciesRates'
 import { setCurrencyRate } from '~/logic/currencyValues/store/actions/setCurrencyRate'

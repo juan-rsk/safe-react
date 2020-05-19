@@ -5,8 +5,8 @@ import { getExchangeRatesUrl } from '~/config'
 import { AVAILABLE_CURRENCIES } from '~/logic/currencyValues/store/model/currencyValues'
 
 const fetchCurrenciesRates = async (
-  baseCurrency: $Keys<typeof AVAILABLE_CURRENCIES>,
-  targetCurrencyValue: $Keys<typeof AVAILABLE_CURRENCIES>,
+  baseCurrency: AVAILABLE_CURRENCIES,
+  targetCurrencyValue: AVAILABLE_CURRENCIES,
 ): Promise<number> => {
   let rate = 0
   const url = `${getExchangeRatesUrl()}?base=${baseCurrency}&symbols=${targetCurrencyValue}`

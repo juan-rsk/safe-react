@@ -1,21 +1,18 @@
 // @flow
-import { Loader, Stepper } from '@gnosis.pm/safe-react-components'
 import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
 
-import { ErrorFooter } from './components/Footer'
-import { isConfirmationStep, steps } from './steps'
-
+import { Loader, Stepper } from '~/components-v2'
+import LoaderDots from '~/components-v2/feedback/Loader-dots/assets/loader-dots.svg'
 import Button from '~/components/layout/Button'
 import Heading from '~/components/layout/Heading'
 import Img from '~/components/layout/Img'
 import Paragraph from '~/components/layout/Paragraph'
 import { initContracts } from '~/logic/contracts/safeContracts'
 import { EMPTY_DATA } from '~/logic/wallets/ethTransactions'
-import { getWeb3 } from '~/logic/wallets/getWeb3'
+import { getEtherScanLink, getWeb3 } from '~/logic/wallets/getWeb3'
 import { background, connected } from '~/theme/variables'
 
-const loaderDotsSvg = require('./assets/loader-dots.svg')
 const successSvg = require('./assets/success.svg')
 const vaultErrorSvg = require('./assets/vault-error.svg')
 const vaultSvg = require('./assets/vault.svg')
@@ -50,18 +47,21 @@ const Body = styled.div`
   display: grid;
   grid-template-rows: 100px 50px 70px 60px 100px;
 `
+const EtherScanLink = styled.a`
+  color: ${connected};
+`
 
 const CardTitle = styled.div`
   font-size: 20px;
 `
 const FullParagraph = styled(Paragraph)`
-  background-color: ${(p) => (p.inverseColors ? connected : background)};
-  color: ${(p) => (p.inverseColors ? background : connected)};
+  background-color: ${background};
   padding: 24px;
   font-size: 16px;
   margin-bottom: 16px;
-
-  transition: color 0.3s ease-in-out, background-color 0.3s ease-in-out;
+`
+const ButtonMargin = styled(Button)`
+  margin-right: 16px;
 `
 
 const BodyImage = styled.div`
@@ -88,11 +88,6 @@ const BodyFooter = styled.div`
   align-items: flex-end;
 `
 
-const BackButton = styled(Button)`
-  grid-column: 2;
-  margin: 20px auto 0;
-`
-
 type Props = {
   provider: string,
   creationTxHash: Promise<any>,
@@ -113,12 +108,77 @@ const SafeDeployment = ({ creationTxHash, onCancel, onRetry, onSuccess, provider
   const [waitingSafeDeployed, setWaitingSafeDeployed] = useState(false)
   const [continueButtonDisabled, setContinueButtonDisabled] = useState(false)
 
-  const confirmationStep = isConfirmationStep(stepIndex)
+  const genericFooter = (
+    <span>
+      <p>This process should take a couple of minutes.</p>
+      <p>
+        Follow the progress on{' '}
+        <EtherScanLink
+          aria-label="Show details on Etherscan"
+          href={getEtherScanLink('tx', safeCreationTxHash)}
+          rel="noopener noreferrer"
+          target="_blank"
+        >
+          Etherscan.io
+        </EtherScanLink>
+        .
+      </p>
+    </span>
+  )
 
   const navigateToSafe = () => {
     setContinueButtonDisabled(true)
     onSuccess(createdSafeAddress)
   }
+
+  const steps = [
+    {
+      id: '1',
+      label: 'Waiting for transaction confirmation',
+      description: undefined,
+      instruction: 'Please confirm the Safe creation in your wallet',
+      footer: null,
+    },
+    {
+      id: '2',
+      label: 'Transaction submitted',
+      description: undefined,
+      instruction: 'Please do not leave the page',
+      footer: genericFooter,
+    },
+    {
+      id: '3',
+      label: 'Validating transaction',
+      description: undefined,
+      instruction: 'Please do not leave the page',
+      footer: genericFooter,
+    },
+    {
+      id: '4',
+      label: 'Deploying smart contract',
+      description: undefined,
+      instruction: 'Please do not leave the page',
+      footer: genericFooter,
+    },
+    {
+      id: '5',
+      label: 'Generating your Safe',
+      description: undefined,
+      instruction: 'Please do not leave the page',
+      footer: genericFooter,
+    },
+    {
+      id: '6',
+      label: 'Success',
+      description: 'Your Safe was created successfully',
+      instruction: 'Click below to get started',
+      footer: (
+        <Button color="primary" disabled={continueButtonDisabled} onClick={navigateToSafe} variant="contained">
+          Continue
+        </Button>
+      ),
+    },
+  ]
 
   const onError = (error) => {
     setIntervalStarted(false)
@@ -294,13 +354,6 @@ const SafeDeployment = ({ creationTxHash, onCancel, onRetry, onSuccess, provider
     return <Loader />
   }
 
-  let FooterComponent = null
-  if (error) {
-    FooterComponent = ErrorFooter
-  } else if (steps[stepIndex].footerComponent) {
-    FooterComponent = steps[stepIndex].footerComponent
-  }
-
   return (
     <Wrapper>
       <Title tag="h2">Safe creation process</Title>
@@ -316,30 +369,29 @@ const SafeDeployment = ({ creationTxHash, onCancel, onRetry, onSuccess, provider
           <CardTitle>{steps[stepIndex].description || steps[stepIndex].label}</CardTitle>
         </BodyDescription>
 
-        <BodyLoader>{!error && stepIndex <= 4 && <Img alt="Loader dots" src={loaderDotsSvg} />}</BodyLoader>
+        <BodyLoader>{!error && stepIndex <= 4 && <Img alt="LoaderDots" src={LoaderDots} />}</BodyLoader>
 
         <BodyInstruction>
-          <FullParagraph color="primary" inverseColors={confirmationStep} noMargin size="md">
+          <FullParagraph color="primary" noMargin size="md">
             {error ? 'You can Cancel or Retry the Safe creation process.' : steps[stepIndex].instruction}
           </FullParagraph>
         </BodyInstruction>
 
         <BodyFooter>
-          {FooterComponent ? (
-            <FooterComponent
-              continueButtonDisabled={continueButtonDisabled}
-              onCancel={onCancel}
-              onClick={onRetryTx}
-              onContinue={navigateToSafe}
-              onRetry={onRetryTx}
-              safeCreationTxHash={safeCreationTxHash}
-            />
-          ) : null}
+          {error ? (
+            <>
+              <ButtonMargin onClick={onCancel} variant="contained">
+                Cancel
+              </ButtonMargin>
+              <Button color="primary" onClick={onRetryTx} variant="contained">
+                Retry
+              </Button>
+            </>
+          ) : (
+            steps[stepIndex].footer
+          )}
         </BodyFooter>
       </Body>
-      <BackButton color="primary" minWidth={140} onClick={onCancel}>
-        Back
-      </BackButton>
     </Wrapper>
   )
 }
