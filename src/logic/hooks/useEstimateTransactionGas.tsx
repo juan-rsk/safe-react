@@ -168,6 +168,8 @@ export const useEstimateTransactionGas = ({
             safeTxGas: safeTxGasEstimation,
             approvalAndExecution,
           })
+          // RSKSMART: Patch applied for RSK network
+          ethGasLimitEstimation = ethGasLimitEstimation + 100000
         }
 
         const gasPrice = manualGasPrice ? web3.utils.toWei(manualGasPrice, 'gwei') : await calculateGasPrice()

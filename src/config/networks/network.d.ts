@@ -41,6 +41,7 @@ export enum ETHEREUM_NETWORK {
   ROPSTEN = 3,
   RINKEBY = 4,
   GOERLI = 5,
+  RSK_TESTNET = 31,
   KOVAN = 42,
   BSC = 56,
   XDAI = 100,
@@ -85,7 +86,7 @@ type GasPrice =
   | {
       gasPrice?: number
       // for infura there's a REST API Token required stored in: `REACT_APP_INFURA_TOKEN`
-      gasPriceOracle: GasPriceOracle
+      gasPriceOracle?: GasPriceOracle
     }
 
 export type EnvironmentSettings = GasPrice & {

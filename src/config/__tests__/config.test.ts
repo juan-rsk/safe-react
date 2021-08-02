@@ -1,7 +1,9 @@
 import { ETHEREUM_NETWORK } from 'src/config/networks/network.d'
-import { default as networks } from 'src/config/networks'
+import mainnet from 'src/config/networks/mainnet'
+import xdai from 'src/config/networks/xdai'
+// import { default as networks } from 'src/config/networks'
 
-const { mainnet, xdai } = networks
+// const { mainnet, xdai } = networks
 
 describe('Config Services', () => {
   beforeEach(() => {
