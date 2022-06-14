@@ -25,9 +25,9 @@ jobs:
 
     - name: Install dependencies
       run: |
-        yarn add truffle
-        yarn add ganache-cli
-        yarn add flow-type
+        #        yarn add truffle
+        #        yarn add ganache-cli
+        #        yarn add flow-type
         yarn
 
     - name: Build site
