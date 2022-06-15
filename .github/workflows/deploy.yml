@@ -25,7 +25,7 @@ jobs:
 
     - name: Install dependencies
       run: |
-        sudo apt install libusb-1.0-0
+        sudo apt install libusb-1.0-0-dev
         #        yarn add truffle
         #        yarn add ganache-cli
         #        yarn add flow-type
