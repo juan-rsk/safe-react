@@ -26,14 +26,11 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt install libusb-1.0-0-dev libudev-dev
-        #        yarn add truffle
-        #        yarn add ganache-cli
-        #        yarn add flow-type
         yarn
 
     - name: Build site
       run: |
-        yarn build
+        yarn build-mainnet
         
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
